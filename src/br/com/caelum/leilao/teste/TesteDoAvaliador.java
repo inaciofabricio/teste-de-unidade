@@ -4,8 +4,10 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import br.com.caelum.leilao.builder.CriadorDeLeilao;
 import br.com.caelum.leilao.dominio.Lance;
 import br.com.caelum.leilao.dominio.Leilao;
 import br.com.caelum.leilao.dominio.Usuario;
@@ -13,63 +15,58 @@ import br.com.caelum.leilao.servico.Avaliador;
 
 public class TesteDoAvaliador {
 
+	private Avaliador leiloeiro;
+	private Usuario joao;
+	private Usuario maria;
+	private Usuario jose;
+
+	@Before
+	public void criaAvaliador() {
+		this.leiloeiro = new Avaliador();
+		this.joao = new Usuario("João");
+		this.maria = new Usuario("Maria");
+		this.jose = new Usuario("José");
+	}
+	
 	@Test
 	public void deveEntenderLancesEmOrdemCrescente() {
-		
-		// parte 1: cenario
-		Usuario joao = new Usuario("João");
-		Usuario maria = new Usuario("Maria");
-		Usuario jose = new Usuario("José");
-		
-		Leilao leilao = new Leilao("Carro usado");
-		
-		leilao.propoe(new Lance(joao, 250));
-		leilao.propoe(new Lance(maria, 350));
-		leilao.propoe(new Lance(jose, 400));
-		
-		// parte 2: ação
-		Avaliador leiloeiro = new Avaliador();
+	
+		Leilao leilao = new CriadorDeLeilao().para("Fusca Velho")
+				.lance(joao, 250)
+				.lance(maria, 350)
+				.lance(jose, 400)
+				.controi();
+
 		leiloeiro.avalia(leilao);
-		
-		// parte 3: validação
+
 		assertEquals(400, leiloeiro.getMaiorLance(), 0.00001);
 		assertEquals(250, leiloeiro.getMenorLance(), 0.00001);
-		
-		
 	}
 	
 	@Test
 	public void deveEntenderLeilaoComApenasUmLance() {
-		// parte 1: cenario
-		Usuario joao = new Usuario("João");
-		Leilao leilao = new Leilao("Outro Carro usado");
+
+		Leilao leilao = new CriadorDeLeilao().para("Outro Carro usado")
+				.lance(joao, 1000)
+				.controi();
 		
-		leilao.propoe(new Lance(joao, 1000.0));
+     	leiloeiro.avalia(leilao);
 		
-		// parte 2: ação
-		Avaliador leiloeiro = new Avaliador();
-		leiloeiro.avalia(leilao);
-		
-		// parte 3: validação
-		assertEquals(1000.0, leiloeiro.getMaiorLance(), 0.00001);
+     	assertEquals(1000.0, leiloeiro.getMaiorLance(), 0.00001);
 		assertEquals(1000.0, leiloeiro.getMenorLance(), 0.00001);
 	}
 	
 	@Test
 	public void deveEncontrarOsTresMaioresLances() {
-		// parte 1: cenario
-		Usuario joao = new Usuario("João");
-		Usuario maria = new Usuario("Maria");
 		
-		Leilao leilao = new Leilao("Outro Carro usado");
-		
-		leilao.propoe(new Lance(joao, 100));
-		leilao.propoe(new Lance(maria, 200));
-		leilao.propoe(new Lance(joao, 300));
-		leilao.propoe(new Lance(maria, 400));
+		Leilao leilao = new CriadorDeLeilao().para("Fusca Velho")
+				.lance(joao, 100)
+				.lance(maria, 200)
+				.lance(joao, 300)
+				.lance(maria, 400)
+				.controi();
 		
 		// parte 2: ação
-		Avaliador leiloeiro = new Avaliador();
 		leiloeiro.avalia(leilao);
 		
 		List<Lance> maiores = leiloeiro.getTresMaiores();
