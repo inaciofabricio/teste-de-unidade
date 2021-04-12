@@ -18,7 +18,7 @@ public class CriadorDeLeilao {
 		return this;
 	}
 
-	public Leilao controi() {
+	public Leilao constroi() {
 		return this.leilao;
 	}
 

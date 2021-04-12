@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.List;
 
+import org.junit.Assert;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -28,6 +31,13 @@ public class TesteDoAvaliador {
 		this.jose = new Usuario("José");
 	}
 	
+	@Test(expected = RuntimeException.class)
+	public void NaoDeveAvaliarLeiloesSemNenhumLance() {
+		Leilao leilao = new CriadorDeLeilao().para("Carreta").constroi();
+		leiloeiro.avalia(leilao);
+	}
+	
+	
 	@Test
 	public void deveEntenderLancesEmOrdemCrescente() {
 	
@@ -35,12 +45,16 @@ public class TesteDoAvaliador {
 				.lance(joao, 250)
 				.lance(maria, 350)
 				.lance(jose, 400)
-				.controi();
+				.constroi();
 
 		leiloeiro.avalia(leilao);
 
 		assertEquals(400, leiloeiro.getMaiorLance(), 0.00001);
 		assertEquals(250, leiloeiro.getMenorLance(), 0.00001);
+//		assertThat(leiloeiro.getMaiorLance(), equalTo(400));
+//		assertThat(leiloeiro.getMenorLance(), equalTo(250));
+		
+		
 	}
 	
 	@Test
@@ -48,7 +62,7 @@ public class TesteDoAvaliador {
 
 		Leilao leilao = new CriadorDeLeilao().para("Outro Carro usado")
 				.lance(joao, 1000)
-				.controi();
+				.constroi();
 		
      	leiloeiro.avalia(leilao);
 		
@@ -64,7 +78,7 @@ public class TesteDoAvaliador {
 				.lance(maria, 200)
 				.lance(joao, 300)
 				.lance(maria, 400)
-				.controi();
+				.constroi();
 		
 		// parte 2: ação
 		leiloeiro.avalia(leilao);
